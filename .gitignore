@@ -1,4 +1,7 @@
 node_modules/
+*.tsbuildinfo
+.cache/
+.eslintcache
 
 .env
 .env.*
@@ -8,11 +11,16 @@ node_modules/
 dist/
 build/
 coverage/
+test-results/
 
 *.log
+*.pid
 
 .DS_Store
 Thumbs.db
 
 .vscode/
 .idea/
+*.swp
+*.swo
+*~

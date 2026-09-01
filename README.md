@@ -2,6 +2,8 @@
 
 Tested reference implementations accompanying technical articles published by ProdAI Stack.
 
+Each project is self-contained and includes its own installation and verification instructions.
+
 ## Projects
 
 ### Production AI System Design
@@ -20,3 +22,5 @@ Production-oriented TypeScript examples covering:
 - Evaluation release gates
 
 [Open the reference implementation](./production-ai-system-design)
+
+The implementation uses deterministic mocks and fault injection; its results are not external-provider benchmarks.
