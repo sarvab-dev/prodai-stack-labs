@@ -1,0 +1,6 @@
+flowchart LR
+  Change --> Unit[Unit and integration tests] --> Evals[Quality and safety evals]
+  Evals --> Performance[Latency reliability cost tests] --> Gate{All thresholds pass?}
+  Gate -->|Yes| Deploy --> Monitor[Production monitoring]
+  Gate -->|No| Block[Block release]
+  Monitor --> Regression[Regression cases] --> Change

@@ -1,0 +1,7 @@
+flowchart TB
+  Request --> Deadline[Total deadline] --> Classify[Error classification] --> Model[Model call]
+  Model --> Validate[Output validation] --> Result
+  Model -->|retryable| Backoff[Bounded backoff and jitter] --> Model
+  Model -->|retry budget exhausted| Fallback[Measured fallback] --> Validate
+  Limits[Concurrency and rate limits] -.-> Model
+  Trace[Attempt fallback latency usage] -.-> Model

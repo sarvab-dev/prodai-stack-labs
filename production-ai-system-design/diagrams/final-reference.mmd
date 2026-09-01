@@ -1,0 +1,14 @@
+flowchart TB
+  Client --> Edge[API authentication rate limit] --> App[Application service]
+  App --> Input[Typed input contract] --> Context[Context retrieval tools]
+  Context --> Gateway[Model gateway]
+  Gateway --> Primary[Primary provider]
+  Gateway --> Fallback[Fallback provider]
+  Primary --> Output[Schema validation]
+  Fallback --> Output
+  Output --> Domain[Business validation] --> Decision{Side effect?}
+  Decision -->|No| Response
+  Decision -->|Yes| Approval[Policy approval idempotency] --> Service[Business service] --> Response
+  Observability[Tracing metrics cost quality] -.-> Gateway
+  Evaluation[Datasets CI gates continuous eval] -.-> App
+  Security[Trust boundaries secrets privacy] -.-> Context

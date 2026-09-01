@@ -1,0 +1,17 @@
+sequenceDiagram
+  participant U as User
+  participant M as Model
+  participant P as Policy and approval
+  participant I as Idempotency store
+  participant B as Business service
+  U->>M: Request recommendation
+  M-->>P: Proposed action
+  P->>P: Authorize and validate
+  P->>I: Claim idempotency key
+  alt First execution
+    I->>B: Execute approved mutation
+    B-->>I: Store result
+  else Duplicate
+    I-->>P: Return stored result
+  end
+  P-->>U: Deterministic result

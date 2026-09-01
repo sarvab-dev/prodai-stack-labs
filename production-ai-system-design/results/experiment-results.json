@@ -1,0 +1,32 @@
+{
+  "experiment-timeout": {
+    "status": "PASSED",
+    "summary": "Three in-budget requests completed and the over-deadline request was cancelled.",
+    "metrics": { "cases": 4, "completionRate": 0.75, "timeoutRate": 0.25, "p95LatencyMs": 5007.8 },
+    "observations": ["AbortSignal cancelled the over-deadline provider call.", "Latency values are local wall-clock measurements against deterministic timers."]
+  },
+  "experiment-retry": {
+    "status": "PASSED",
+    "summary": "Bounded retries recovered temporary 429/500 failures and did not retry permanent failures.",
+    "metrics": { "providerCalls": { "none": 1, "fixed": 3, "exponential": 3, "nonRetryable": 1 }, "successfulTasks": { "none": 0, "fixed": 1, "exponential": 1 }, "p95SimulatedLatencyMs": 60, "retryAmplificationFactor": 3 },
+    "observations": ["Backoff timing is virtual and deterministic; no provider traffic occurred.", "Amplification is provider calls divided by one logical task."]
+  },
+  "experiment-schema": {
+    "status": "PASSED",
+    "summary": "Parsing, structural validity, and domain validity were measured independently.",
+    "metrics": { "samples": 5, "parseSuccessRate": 0.8, "schemaValidityRate": 0.6, "businessValidityRate": 0.2, "refusalOrFailureRate": 0.8 },
+    "observations": ["Schema-valid output can still fail confidence or citation requirements."]
+  },
+  "experiment-fallback": {
+    "status": "PASSED",
+    "summary": "Fallback improved completion for retryable failures without masking authentication failures.",
+    "metrics": { "primaryOnlyCompletionRate": 0.25, "fallbackCompletionRate": 0.75, "averageDeterministicQuality": 0.87, "p95LatencyMs": 0.64, "fallbackRate": 0.5, "costUnitsPerSuccessfulTask": 1.67 },
+    "observations": ["Cost units are synthetic metadata, not currency or provider pricing."]
+  },
+  "experiment-load": {
+    "status": "PASSED",
+    "summary": "A capacity-limited fake provider exposed throughput, tail latency, errors, and rate limiting under bursts.",
+    "metrics": { "tasks": 80, "throughputPerSecond": 187.58, "p50LatencyMs": 15.24, "p95LatencyMs": 41.03, "p99LatencyMs": 41.84, "errorRate": 0.9, "rateLimitRate": 0.9 },
+    "observations": ["Results measure local deterministic fault injection and are not provider benchmarks."]
+  }
+}

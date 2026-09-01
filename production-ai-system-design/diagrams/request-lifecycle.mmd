@@ -1,0 +1,6 @@
+flowchart LR
+  Client --> Auth[API and auth] --> App[Application service] --> Input[Input validation]
+  Input --> Context[Context and tools] --> Gateway[Model gateway] --> Provider
+  Provider --> Output[Output schema validation] --> Business[Business validation] --> Response
+  Controls[Security rate limits caching cost] -.-> App
+  Telemetry[Traces metrics evaluations] -.-> Gateway

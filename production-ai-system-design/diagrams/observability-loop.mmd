@@ -1,0 +1,8 @@
+flowchart LR
+  Request[AI request] --> Trace[Traces metrics logs]
+  Trace --> Eval[Online and offline evaluation]
+  Eval --> Signals[Incidents and user feedback]
+  Signals --> Dataset[Regression dataset]
+  Dataset --> Change[Prompt model code change]
+  Change --> Gate[Release gate]
+  Gate --> Request

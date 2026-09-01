@@ -1,0 +1,1017 @@
+{
+  "schemaVersion": "1.0",
+  "contentType": "article",
+  "title": "Production AI System Design: From Model Call to Reliable Product",
+  "slug": "production-ai-system-design",
+  "excerpt": "A practical system-design brief for turning an LLM API call into a reliable, observable, testable production AI product.",
+  "category": "AI Engineering Foundations",
+  "tags": [
+    "production-ai",
+    "llm-architecture",
+    "system-design",
+    "reliability",
+    "observability",
+    "llmops",
+    "evaluation",
+    "structured-outputs"
+  ],
+  "difficulty": "ADVANCED",
+  "prerequisites": [
+    "HTTP and API fundamentals",
+    "Node.js or comparable backend experience",
+    "Basic TypeScript",
+    "Basic LLM API usage",
+    "Async error handling",
+    "Basic logging and metrics"
+  ],
+  "research": {
+    "targetReader": "Senior software engineers, backend/full-stack engineers, platform engineers, technical leads, and architects who can already call an LLM API but need production-grade reliability.",
+    "readerProblem": "The prototype request -> prompt -> model -> response works in demos but lacks contracts, failure isolation, retry policy, idempotency, observability, evaluation gates, security controls, latency budgets, and cost controls.",
+    "searchIntent": "Technical architecture and implementation guidance for production-ready LLM applications.",
+    "primaryQueries": [
+      "production AI system design",
+      "production LLM architecture",
+      "LLM application architecture",
+      "production AI architecture"
+    ],
+    "secondaryQueries": [
+      "LLM production best practices",
+      "LLM reliability",
+      "LLM observability",
+      "LLM retry strategy",
+      "LLM timeout strategy",
+      "LLM fallback architecture",
+      "LLM structured outputs",
+      "AI gateway architecture",
+      "LLM evaluation CI CD"
+    ],
+    "uniqueAngle": "Treat the LLM as a nondeterministic external dependency inside an otherwise engineered software system. Build deterministic contracts, failure boundaries, observability, recovery behavior, security controls, and release gates around it.",
+    "competitorGaps": [
+      "Failure states are rarely modeled as explicit product contracts.",
+      "Retry advice often ignores error classification, deadlines, and retry amplification.",
+      "Observability sections often omit prompt/model/config versions, token usage, fallbacks, validation failures, and evaluation labels.",
+      "Idempotency and side-effect safety are often missing.",
+      "Quality SLOs are often separated from reliability SLOs.",
+      "Fallback is often recommended without measuring quality, latency, and cost.",
+      "Security is often reduced to prompt injection instead of multiple trust boundaries.",
+      "Benchmarks are often stated without executable tests or fault injection."
+    ],
+    "keyTakeaways": [
+      "The model call is a dependency, not the whole product.",
+      "Use deterministic software boundaries around nondeterministic generation.",
+      "Reliability includes task quality, not only HTTP availability.",
+      "Trace prompt, model, schema, app, and evaluation versions.",
+      "Measure retries, fallbacks, latency, cost, and quality before adopting them.",
+      "Evaluation belongs in CI/CD and production feedback loops."
+    ],
+    "researchNotes": [
+      "GitHub 2025 Octoverse reports more than 1.1 million public repositories importing LLM SDKs, +178% year over year.",
+      "Stack Overflow 2025 reports more developers distrust AI-tool accuracy than trust it.",
+      "AWS recommends error recovery, prompt/model management, load testing, and observability for generative AI workloads.",
+      "Google recommends strict version control, CI/CD, automated evaluation, end-to-end monitoring, and continuous evaluation.",
+      "OpenTelemetry now provides GenAI-focused observability guidance.",
+      "OWASP treats prompt injection, output handling, sensitive information, excessive agency, and unbounded consumption as application risks."
+    ]
+  },
+  "outline": [
+    {
+      "id": "section-1",
+      "heading": "The Model Call Is Not the Product",
+      "level": 2,
+      "purpose": "Contrast a demo integration with a production AI system.",
+      "notes": [
+        "Show request -> model -> response.",
+        "Introduce nondeterminism, latency, failures, cost, security, observability, and quality."
+      ],
+      "codeExampleIds": [],
+      "diagramIds": [
+        "diagram-prototype-vs-production"
+      ],
+      "experimentIds": []
+    },
+    {
+      "id": "section-2",
+      "heading": "Define the Product Contract First",
+      "level": 2,
+      "purpose": "Specify observable behavior before choosing orchestration frameworks.",
+      "notes": [
+        "Define input/output schemas.",
+        "Model success, refusal, partial result, retryable error, permanent error, and degraded response.",
+        "Separate schema validity from business validity."
+      ],
+      "codeExampleIds": [
+        "code-contract",
+        "code-schema-validation"
+      ],
+      "diagramIds": [
+        "diagram-request-lifecycle"
+      ],
+      "experimentIds": [
+        "experiment-schema"
+      ]
+    },
+    {
+      "id": "section-3",
+      "heading": "Reference Production AI Architecture",
+      "level": 2,
+      "purpose": "Present a vendor-neutral request lifecycle and trust boundaries.",
+      "notes": [
+        "Client -> API/Auth -> Application Service -> Validation -> Context/Tools -> Model Gateway -> Provider -> Output Validation -> Business Validation -> Response.",
+        "Show security, evaluation, observability, rate limits, caching, and cost as cross-cutting concerns."
+      ],
+      "codeExampleIds": [],
+      "diagramIds": [
+        "diagram-request-lifecycle"
+      ],
+      "experimentIds": []
+    },
+    {
+      "id": "section-4",
+      "heading": "Use a Small Model Gateway",
+      "level": 2,
+      "purpose": "Centralize provider policy without building a large abstraction framework.",
+      "notes": [
+        "Centralize model identity, timeout, telemetry, token usage, parsing, and error mapping.",
+        "Keep provider-specific capabilities accessible through thin adapters."
+      ],
+      "codeExampleIds": [
+        "code-model-gateway",
+        "code-provider-adapter"
+      ],
+      "diagramIds": [
+        "diagram-reliability-envelope"
+      ],
+      "experimentIds": []
+    },
+    {
+      "id": "section-5",
+      "heading": "Build Deterministic Boundaries Around Model Output",
+      "level": 2,
+      "purpose": "Use schemas plus domain validation to control generated output.",
+      "notes": [
+        "Use JSON Schema or equivalent.",
+        "Validate again at the application boundary.",
+        "Explain that schema validity does not imply factual or business correctness."
+      ],
+      "codeExampleIds": [
+        "code-schema-validation",
+        "code-business-validation"
+      ],
+      "diagramIds": [],
+      "experimentIds": [
+        "experiment-schema"
+      ]
+    },
+    {
+      "id": "section-6",
+      "heading": "Timeouts, Retries, Backoff, and Error Classification",
+      "level": 2,
+      "purpose": "Replace generic retry advice with bounded, testable policy.",
+      "notes": [
+        "Classify timeouts, network errors, 429s, 5xx, auth errors, validation failures, and semantic failures.",
+        "Respect a total request deadline.",
+        "Use bounded exponential backoff with jitter where appropriate."
+      ],
+      "codeExampleIds": [
+        "code-timeout-retry"
+      ],
+      "diagramIds": [
+        "diagram-reliability-envelope"
+      ],
+      "experimentIds": [
+        "experiment-timeout",
+        "experiment-retry"
+      ]
+    },
+    {
+      "id": "section-7",
+      "heading": "Protect Side Effects With Idempotency and Approval Boundaries",
+      "level": 2,
+      "purpose": "Prevent retries or model behavior from repeating business actions.",
+      "notes": [
+        "Separate recommendation from execution.",
+        "Validate authorization and policy before mutation.",
+        "Use idempotency keys.",
+        "Introduce human approval for high-impact actions where required."
+      ],
+      "codeExampleIds": [
+        "code-idempotent-action"
+      ],
+      "diagramIds": [
+        "diagram-side-effect"
+      ],
+      "experimentIds": []
+    },
+    {
+      "id": "section-8",
+      "heading": "Model Routing and Fallback Need Measurement",
+      "level": 2,
+      "purpose": "Show why fallback is a quality/cost/latency trade-off, not a free reliability win.",
+      "notes": [
+        "Separate failure fallback from capability/cost routing.",
+        "Record every fallback.",
+        "Allow safe degradation or explicit failure when the contract cannot be met."
+      ],
+      "codeExampleIds": [
+        "code-fallback"
+      ],
+      "diagramIds": [
+        "diagram-reliability-envelope"
+      ],
+      "experimentIds": [
+        "experiment-fallback"
+      ]
+    },
+    {
+      "id": "section-9",
+      "heading": "Observe the Whole AI Request",
+      "level": 2,
+      "purpose": "Make slow, expensive, invalid, and low-quality outputs diagnosable.",
+      "notes": [
+        "Trace app version, prompt/config version, provider/model, latency, token usage, retries, fallback, tools/retrieval, and validation.",
+        "Treat prompt/completion content as sensitive opt-in telemetry."
+      ],
+      "codeExampleIds": [
+        "code-telemetry"
+      ],
+      "diagramIds": [
+        "diagram-observability"
+      ],
+      "experimentIds": []
+    },
+    {
+      "id": "section-10",
+      "heading": "Reliability SLOs Must Include Quality",
+      "level": 2,
+      "purpose": "Extend conventional availability and latency SLOs with task-quality measures.",
+      "notes": [
+        "Track availability, p95/p99 latency, errors, validation failures, fallback rate, task success rate, and cost per successful task.",
+        "Label target numbers as product-specific examples, not universal standards."
+      ],
+      "codeExampleIds": [],
+      "diagramIds": [],
+      "experimentIds": [
+        "experiment-load"
+      ]
+    },
+    {
+      "id": "section-11",
+      "heading": "Security, Cost, and Evaluation Are Architecture Concerns",
+      "level": 2,
+      "purpose": "Introduce the remaining cross-cutting production boundaries.",
+      "notes": [
+        "Treat user input, retrieved content, tool output, model output, and downstream interpreters as separate trust boundaries.",
+        "Break down token, retry, retrieval/tool, and evaluation cost.",
+        "Make evaluation a release gate."
+      ],
+      "codeExampleIds": [
+        "code-release-gate"
+      ],
+      "diagramIds": [
+        "diagram-ci-eval"
+      ],
+      "experimentIds": []
+    },
+    {
+      "id": "section-12",
+      "heading": "What Changes With RAG, Tools, and Agents?",
+      "level": 2,
+      "purpose": "Show how added capabilities expand the same failure and trust boundaries.",
+      "notes": [
+        "RAG adds retrieval, evidence, citations, freshness, and permission failures.",
+        "Tools add side effects and permissions.",
+        "Agents add state, loops, stopping conditions, and larger failure surfaces.",
+        "Link to the RAG and evaluation cornerstones."
+      ],
+      "codeExampleIds": [],
+      "diagramIds": [],
+      "experimentIds": []
+    },
+    {
+      "id": "section-13",
+      "heading": "Production Readiness Checklist and Final Reference Architecture",
+      "level": 2,
+      "purpose": "Close with a reusable checklist and one complete ProdAI Stack reference diagram.",
+      "notes": [
+        "Contract defined.",
+        "Timeout/retry policy tested.",
+        "Side effects idempotent.",
+        "Fallback evaluated.",
+        "Tracing implemented.",
+        "Versions traceable.",
+        "Security reviewed.",
+        "Load/failure paths tested.",
+        "Evaluation gates passing.",
+        "Rollback/degradation documented."
+      ],
+      "codeExampleIds": [],
+      "diagramIds": [
+        "diagram-final-reference"
+      ],
+      "experimentIds": []
+    }
+  ],
+  "diagrams": [
+    {
+      "id": "diagram-prototype-vs-production",
+      "title": "Prototype vs Production AI System",
+      "type": "architecture",
+      "description": "Simple model call beside a production system with contracts, gateway, validation, resilience, observability, security, evaluation, and cost controls.",
+      "format": "mermaid",
+      "source": "flowchart LR\n  subgraph Prototype\n    PClient[Client] --> PModel[Model API] --> PResponse[Response]\n  end\n  subgraph Production\n    Client[Client] --> Contract[Typed contract] --> Gateway[Model gateway] --> Provider[Provider]\n    Provider --> Validate[Output and business validation] --> Response[Response]\n    Policy[Security and cost policy] -.-> Gateway\n    Observe[Tracing and evaluation] -.-> Gateway\n    Resilience[Deadline retry fallback] -.-> Gateway\n  end\n",
+      "status": "COMPLETE"
+    },
+    {
+      "id": "diagram-request-lifecycle",
+      "title": "Production AI Request Lifecycle",
+      "type": "architecture",
+      "description": "End-to-end vendor-neutral request flow with cross-cutting concerns.",
+      "format": "mermaid",
+      "source": "flowchart LR\n  Client --> Auth[API and auth] --> App[Application service] --> Input[Input validation]\n  Input --> Context[Context and tools] --> Gateway[Model gateway] --> Provider\n  Provider --> Output[Output schema validation] --> Business[Business validation] --> Response\n  Controls[Security rate limits caching cost] -.-> App\n  Telemetry[Traces metrics evaluations] -.-> Gateway\n",
+      "status": "COMPLETE"
+    },
+    {
+      "id": "diagram-reliability-envelope",
+      "title": "Reliability Envelope Around the Model Call",
+      "type": "architecture",
+      "description": "Deadline, timeout, retry classification, backoff, concurrency control, validation, fallback, and telemetry around inference.",
+      "format": "mermaid",
+      "source": "flowchart TB\n  Request --> Deadline[Total deadline] --> Classify[Error classification] --> Model[Model call]\n  Model --> Validate[Output validation] --> Result\n  Model -->|retryable| Backoff[Bounded backoff and jitter] --> Model\n  Model -->|retry budget exhausted| Fallback[Measured fallback] --> Validate\n  Limits[Concurrency and rate limits] -.-> Model\n  Trace[Attempt fallback latency usage] -.-> Model\n",
+      "status": "COMPLETE"
+    },
+    {
+      "id": "diagram-side-effect",
+      "title": "Model Recommendation vs Business Side Effect",
+      "type": "sequence",
+      "description": "Model proposal -> deterministic policy/authorization -> idempotent business service -> external mutation.",
+      "format": "mermaid",
+      "source": "sequenceDiagram\n  participant U as User\n  participant M as Model\n  participant P as Policy and approval\n  participant I as Idempotency store\n  participant B as Business service\n  U->>M: Request recommendation\n  M-->>P: Proposed action\n  P->>P: Authorize and validate\n  P->>I: Claim idempotency key\n  alt First execution\n    I->>B: Execute approved mutation\n    B-->>I: Store result\n  else Duplicate\n    I-->>P: Return stored result\n  end\n  P-->>U: Deterministic result\n",
+      "status": "COMPLETE"
+    },
+    {
+      "id": "diagram-observability",
+      "title": "AI Observability and Feedback Loop",
+      "type": "architecture",
+      "description": "Traces/metrics -> evaluation/analysis -> incidents/user feedback -> regression dataset -> engineering change.",
+      "format": "mermaid",
+      "source": "flowchart LR\n  Request[AI request] --> Trace[Traces metrics logs]\n  Trace --> Eval[Online and offline evaluation]\n  Eval --> Signals[Incidents and user feedback]\n  Signals --> Dataset[Regression dataset]\n  Dataset --> Change[Prompt model code change]\n  Change --> Gate[Release gate]\n  Gate --> Request\n",
+      "status": "COMPLETE"
+    },
+    {
+      "id": "diagram-ci-eval",
+      "title": "AI CI/CD With Evaluation Gates",
+      "type": "flow",
+      "description": "Change -> tests -> evals -> quality/safety/latency/cost gate -> deploy -> monitor -> regressions.",
+      "format": "mermaid",
+      "source": "flowchart LR\n  Change --> Unit[Unit and integration tests] --> Evals[Quality and safety evals]\n  Evals --> Performance[Latency reliability cost tests] --> Gate{All thresholds pass?}\n  Gate -->|Yes| Deploy --> Monitor[Production monitoring]\n  Gate -->|No| Block[Block release]\n  Monitor --> Regression[Regression cases] --> Change\n",
+      "status": "COMPLETE"
+    },
+    {
+      "id": "diagram-final-reference",
+      "title": "ProdAI Stack Production AI Reference Architecture",
+      "type": "architecture",
+      "description": "Complete vendor-neutral architecture combining request flow, model gateway, optional retrieval/tools, validation, side-effect control, observability, evaluation, and delivery.",
+      "format": "mermaid",
+      "source": "flowchart TB\n  Client --> Edge[API authentication rate limit] --> App[Application service]\n  App --> Input[Typed input contract] --> Context[Context retrieval tools]\n  Context --> Gateway[Model gateway]\n  Gateway --> Primary[Primary provider]\n  Gateway --> Fallback[Fallback provider]\n  Primary --> Output[Schema validation]\n  Fallback --> Output\n  Output --> Domain[Business validation] --> Decision{Side effect?}\n  Decision -->|No| Response\n  Decision -->|Yes| Approval[Policy approval idempotency] --> Service[Business service] --> Response\n  Observability[Tracing metrics cost quality] -.-> Gateway\n  Evaluation[Datasets CI gates continuous eval] -.-> App\n  Security[Trust boundaries secrets privacy] -.-> Context\n",
+      "status": "COMPLETE"
+    }
+  ],
+  "codeExamples": [
+    {
+      "id": "code-contract",
+      "title": "Typed AI Application Contract",
+      "language": "typescript",
+      "description": "Explicit success/refusal/degraded/error result types.",
+      "requirements": [
+        "Provider response types must not leak into the public app contract."
+      ],
+      "repositoryPath": "examples/production-ai-system-design/src/contracts.ts",
+      "code": "",
+      "status": "COMPLETE"
+    },
+    {
+      "id": "code-model-gateway",
+      "title": "Minimal Model Gateway",
+      "language": "typescript",
+      "description": "Provider-neutral generation boundary for timeout, telemetry, configuration, usage, and parsing.",
+      "requirements": [
+        "Keep interface small and testable."
+      ],
+      "repositoryPath": "examples/production-ai-system-design/src/model-gateway.ts",
+      "code": "",
+      "status": "COMPLETE"
+    },
+    {
+      "id": "code-provider-adapter",
+      "title": "Provider Adapter",
+      "language": "typescript",
+      "description": "One concrete SDK adapter isolated from business logic.",
+      "requirements": [
+        "No hard-coded secrets.",
+        "Preserve provider error metadata."
+      ],
+      "repositoryPath": "examples/production-ai-system-design/src/providers/adapter.ts",
+      "code": "",
+      "status": "COMPLETE"
+    },
+    {
+      "id": "code-schema-validation",
+      "title": "Structured Output Validation",
+      "language": "typescript",
+      "description": "Request schema-constrained output and validate again locally.",
+      "requirements": [
+        "Differentiate parse, schema, and business failures."
+      ],
+      "repositoryPath": "examples/production-ai-system-design/src/validation/schema.ts",
+      "code": "",
+      "status": "COMPLETE"
+    },
+    {
+      "id": "code-business-validation",
+      "title": "Business Rule Validation",
+      "language": "typescript",
+      "description": "Apply deterministic domain checks after schema validation.",
+      "requirements": [
+        "Show schema-valid but business-invalid data."
+      ],
+      "repositoryPath": "examples/production-ai-system-design/src/validation/business.ts",
+      "code": "",
+      "status": "COMPLETE"
+    },
+    {
+      "id": "code-timeout-retry",
+      "title": "Deadline, Retry Classification, and Backoff",
+      "language": "typescript",
+      "description": "Bounded retry policy with error classification, jitter, and total deadline.",
+      "requirements": [
+        "Do not retry deterministic validation/auth failures."
+      ],
+      "repositoryPath": "examples/production-ai-system-design/src/reliability/retry.ts",
+      "code": "",
+      "status": "COMPLETE"
+    },
+    {
+      "id": "code-idempotent-action",
+      "title": "Idempotent Side-Effect Boundary",
+      "language": "typescript",
+      "description": "Safe mock action guarded by policy, authorization, and idempotency.",
+      "requirements": [
+        "No real external mutation."
+      ],
+      "repositoryPath": "examples/production-ai-system-design/src/actions/idempotent.ts",
+      "code": "",
+      "status": "COMPLETE"
+    },
+    {
+      "id": "code-fallback",
+      "title": "Primary and Fallback Routing",
+      "language": "typescript",
+      "description": "Explicit failure-triggered fallback with telemetry.",
+      "requirements": [
+        "Record fallback reason and model IDs."
+      ],
+      "repositoryPath": "examples/production-ai-system-design/src/routing/fallback.ts",
+      "code": "",
+      "status": "COMPLETE"
+    },
+    {
+      "id": "code-telemetry",
+      "title": "OpenTelemetry AI Request Trace",
+      "language": "typescript",
+      "description": "Trace application/model boundaries and usage without capturing sensitive content by default.",
+      "requirements": [
+        "Prompt/completion content capture must be opt-in."
+      ],
+      "repositoryPath": "examples/production-ai-system-design/src/observability/tracing.ts",
+      "code": "",
+      "status": "COMPLETE"
+    },
+    {
+      "id": "code-release-gate",
+      "title": "Evaluation Release Gate CLI",
+      "language": "typescript",
+      "description": "Fail CI when quality, reliability, latency, safety, or cost thresholds regress.",
+      "requirements": [
+        "Use process exit code for CI."
+      ],
+      "repositoryPath": "examples/production-ai-system-design/src/eval/release-gate.ts",
+      "code": "",
+      "status": "COMPLETE"
+    }
+  ],
+  "experiments": [
+    {
+      "id": "experiment-timeout",
+      "title": "Timeout Behavior",
+      "hypothesis": "Application deadlines produce predictable failure/degradation under slow provider responses.",
+      "description": "Inject 500 ms, 2 s, 5 s, and over-deadline latency.",
+      "variables": [
+        "provider latency",
+        "deadline"
+      ],
+      "metrics": [
+        "completion rate",
+        "timeout rate",
+        "end-to-end latency"
+      ],
+      "testCases": [
+        "500 ms",
+        "2 s",
+        "5 s",
+        "over deadline"
+      ],
+      "commands": [
+        "npm run example:production-ai"
+      ],
+      "results": {
+        "status": "PASSED",
+        "summary": "Three in-budget requests completed and the over-deadline request was cancelled.",
+        "metrics": {
+          "cases": 4,
+          "completionRate": 0.75,
+          "timeoutRate": 0.25,
+          "p95LatencyMs": 5007.8
+        },
+        "observations": [
+          "AbortSignal cancelled the over-deadline provider call.",
+          "Latency values are local wall-clock measurements against deterministic timers."
+        ]
+      }
+    },
+    {
+      "id": "experiment-retry",
+      "title": "Retry Amplification",
+      "hypothesis": "Bounded exponential backoff with jitter reduces synchronized retries versus fixed retries.",
+      "description": "Compare no retry, fixed retry, and exponential backoff under 429/5xx faults.",
+      "variables": [
+        "retry strategy",
+        "failure type",
+        "concurrency"
+      ],
+      "metrics": [
+        "provider calls",
+        "successful tasks",
+        "p95 latency",
+        "amplification factor"
+      ],
+      "testCases": [
+        "429 burst",
+        "temporary 500",
+        "persistent non-retryable failure"
+      ],
+      "commands": [
+        "npm run example:production-ai"
+      ],
+      "results": {
+        "status": "PASSED",
+        "summary": "Bounded retries recovered temporary 429/500 failures and did not retry permanent failures.",
+        "metrics": {
+          "providerCalls": {
+            "none": 1,
+            "fixed": 3,
+            "exponential": 3,
+            "nonRetryable": 1
+          },
+          "successfulTasks": {
+            "none": 0,
+            "fixed": 1,
+            "exponential": 1
+          },
+          "p95SimulatedLatencyMs": 60,
+          "retryAmplificationFactor": 3
+        },
+        "observations": [
+          "Backoff timing is virtual and deterministic; no provider traffic occurred.",
+          "Amplification is provider calls divided by one logical task."
+        ]
+      }
+    },
+    {
+      "id": "experiment-schema",
+      "title": "Schema Validity vs Business Validity",
+      "hypothesis": "Structured outputs reduce malformed responses, while domain validation still catches semantic failures.",
+      "description": "Classify outputs as parseable, schema-valid, and business-valid.",
+      "variables": [
+        "output mode",
+        "prompt",
+        "model config"
+      ],
+      "metrics": [
+        "parse success",
+        "schema validity",
+        "business validity",
+        "refusal rate"
+      ],
+      "testCases": [
+        "normal",
+        "ambiguous",
+        "domain-invalid",
+        "missing-data"
+      ],
+      "commands": [
+        "npm run example:production-ai"
+      ],
+      "results": {
+        "status": "PASSED",
+        "summary": "Parsing, structural validity, and domain validity were measured independently.",
+        "metrics": {
+          "samples": 5,
+          "parseSuccessRate": 0.8,
+          "schemaValidityRate": 0.6,
+          "businessValidityRate": 0.2,
+          "refusalOrFailureRate": 0.8
+        },
+        "observations": [
+          "Schema-valid output can still fail confidence or citation requirements."
+        ]
+      }
+    },
+    {
+      "id": "experiment-fallback",
+      "title": "Primary-Only vs Primary-With-Fallback",
+      "hypothesis": "Fallback may improve completion during outages but can trade off quality, latency, or cost.",
+      "description": "Run identical tasks under healthy and failed-primary conditions.",
+      "variables": [
+        "routing policy",
+        "failure condition"
+      ],
+      "metrics": [
+        "completion rate",
+        "quality",
+        "p95 latency",
+        "fallback rate",
+        "cost per successful task"
+      ],
+      "testCases": [
+        "healthy primary",
+        "timeout",
+        "429",
+        "5xx"
+      ],
+      "commands": [
+        "npm run example:production-ai"
+      ],
+      "results": {
+        "status": "PASSED",
+        "summary": "Fallback improved completion for retryable failures without masking authentication failures.",
+        "metrics": {
+          "primaryOnlyCompletionRate": 0.25,
+          "fallbackCompletionRate": 0.75,
+          "averageDeterministicQuality": 0.87,
+          "p95LatencyMs": 0.64,
+          "fallbackRate": 0.5,
+          "costUnitsPerSuccessfulTask": 1.67
+        },
+        "observations": [
+          "Cost units are synthetic metadata, not currency or provider pricing."
+        ]
+      }
+    },
+    {
+      "id": "experiment-load",
+      "title": "Concurrency and Tail-Latency Load Test",
+      "hypothesis": "Concurrency control and rate-limit-aware behavior improve tail latency and reduce cascading failures.",
+      "description": "Use a mock provider by default; live calls only when explicitly authorized.",
+      "variables": [
+        "concurrency",
+        "capacity",
+        "limiter"
+      ],
+      "metrics": [
+        "throughput",
+        "p50",
+        "p95",
+        "p99",
+        "error rate",
+        "rate-limit rate"
+      ],
+      "testCases": [
+        "baseline",
+        "moderate",
+        "capacity boundary",
+        "burst"
+      ],
+      "commands": [
+        "npm run example:production-ai"
+      ],
+      "results": {
+        "status": "PASSED",
+        "summary": "A capacity-limited fake provider exposed throughput, tail latency, errors, and rate limiting under bursts.",
+        "metrics": {
+          "tasks": 80,
+          "throughputPerSecond": 187.58,
+          "p50LatencyMs": 15.24,
+          "p95LatencyMs": 41.03,
+          "p99LatencyMs": 41.84,
+          "errorRate": 0.9,
+          "rateLimitRate": 0.9
+        },
+        "observations": [
+          "Results measure local deterministic fault injection and are not provider benchmarks."
+        ]
+      }
+    }
+  ],
+  "sources": [
+    {
+      "title": "Reliability - Generative AI Lens",
+      "url": "https://docs.aws.amazon.com/wellarchitected/latest/generative-ai-lens/reliability.html",
+      "publisher": "Amazon Web Services",
+      "sourceType": "OFFICIAL",
+      "supports": [
+        "reliability",
+        "recovery",
+        "prompt/model management",
+        "scaling"
+      ],
+      "notes": "Primary reliability source.",
+      "verified": true
+    },
+    {
+      "title": "GENREL03-BP01 Graceful Recovery",
+      "url": "https://docs.aws.amazon.com/wellarchitected/latest/generative-ai-lens/genrel03-bp01.html",
+      "publisher": "Amazon Web Services",
+      "sourceType": "OFFICIAL",
+      "supports": [
+        "abstraction layers",
+        "retries",
+        "fallback"
+      ],
+      "notes": "Supports reliability-envelope guidance.",
+      "verified": true
+    },
+    {
+      "title": "Design Principles - Generative AI Lens",
+      "url": "https://docs.aws.amazon.com/wellarchitected/latest/generative-ai-lens/design-principles.html",
+      "publisher": "Amazon Web Services",
+      "sourceType": "OFFICIAL",
+      "supports": [
+        "observability",
+        "resilience",
+        "security",
+        "resource efficiency"
+      ],
+      "notes": "Cross-cutting architecture principles.",
+      "verified": true
+    },
+    {
+      "title": "Maintaining Model Performance",
+      "url": "https://docs.aws.amazon.com/wellarchitected/latest/generative-ai-lens/genperf02.html",
+      "publisher": "Amazon Web Services",
+      "sourceType": "OFFICIAL",
+      "supports": [
+        "load testing",
+        "performance thresholds",
+        "nondeterminism"
+      ],
+      "notes": "Supports load-test section.",
+      "verified": true
+    },
+    {
+      "title": "Deploy and Operate Generative AI Applications",
+      "url": "https://docs.cloud.google.com/architecture/deploy-operate-generative-ai-applications",
+      "publisher": "Google Cloud",
+      "sourceType": "OFFICIAL",
+      "supports": [
+        "versioning",
+        "CI/CD",
+        "evaluation",
+        "monitoring",
+        "continuous evaluation"
+      ],
+      "notes": "Primary lifecycle source.",
+      "verified": true
+    },
+    {
+      "title": "Inside the LLM Call: GenAI Observability with OpenTelemetry",
+      "url": "https://opentelemetry.io/blog/2026/genai-observability/",
+      "publisher": "OpenTelemetry",
+      "sourceType": "ENGINEERING",
+      "supports": [
+        "GenAI tracing",
+        "token usage",
+        "tool calls",
+        "latency"
+      ],
+      "notes": "Current 2026 observability source.",
+      "verified": true
+    },
+    {
+      "title": "OpenTelemetry Semantic Conventions",
+      "url": "https://opentelemetry.io/docs/specs/semconv/",
+      "publisher": "OpenTelemetry",
+      "sourceType": "OFFICIAL",
+      "supports": [
+        "traces",
+        "metrics",
+        "logs",
+        "semantic attributes"
+      ],
+      "notes": "Telemetry standards reference.",
+      "verified": true
+    },
+    {
+      "title": "OWASP Top 10 for Large Language Model Applications",
+      "url": "https://owasp.org/www-project-top-10-for-large-language-model-applications/",
+      "publisher": "OWASP",
+      "sourceType": "OFFICIAL",
+      "supports": [
+        "prompt injection",
+        "output handling",
+        "agency",
+        "resource risks"
+      ],
+      "notes": "Current entry point points to the 2026 GenAI LLM Top 10.",
+      "verified": true
+    },
+    {
+      "title": "OpenAI Responses API Structured Outputs",
+      "url": "https://developers.openai.com/api/reference/cli/resources/beta/subresources/responses",
+      "publisher": "OpenAI",
+      "sourceType": "OFFICIAL",
+      "supports": [
+        "JSON Schema",
+        "structured outputs"
+      ],
+      "notes": "Concrete implementation reference; architecture remains vendor-neutral.",
+      "verified": true
+    },
+    {
+      "title": "Building Effective AI Agents",
+      "url": "https://www.anthropic.com/engineering/building-effective-agents",
+      "publisher": "Anthropic",
+      "sourceType": "ENGINEERING",
+      "supports": [
+        "ground truth",
+        "stopping conditions",
+        "agent reliability"
+      ],
+      "notes": "Use in tools/agents extension section.",
+      "verified": true
+    },
+    {
+      "title": "Octoverse 2025",
+      "url": "https://github.blog/news-insights/octoverse/octoverse-a-new-developer-joins-github-every-second-as-ai-leads-typescript-to-1/",
+      "publisher": "GitHub",
+      "sourceType": "RESEARCH",
+      "supports": [
+        "developer demand",
+        "LLM SDK adoption"
+      ],
+      "notes": "1.1M+ public repos importing LLM SDKs; +178% YoY.",
+      "verified": true
+    },
+    {
+      "title": "AI - 2025 Stack Overflow Developer Survey",
+      "url": "https://survey.stackoverflow.co/2025/ai",
+      "publisher": "Stack Overflow",
+      "sourceType": "RESEARCH",
+      "supports": [
+        "developer trust",
+        "AI adoption"
+      ],
+      "notes": "Distrust of AI-tool accuracy exceeds trust.",
+      "verified": true
+    }
+  ],
+  "internalLinks": [
+    {
+      "title": "Production RAG Architecture: Ingestion, Retrieval, Citations, and Evaluation",
+      "slug": "production-rag-architecture",
+      "relationship": "CHILD_CORNERSTONE",
+      "status": "PENDING"
+    },
+    {
+      "title": "How to Evaluate LLM Applications Before Production",
+      "slug": "evaluate-llm-applications-before-production",
+      "relationship": "CHILD_CORNERSTONE",
+      "status": "PENDING"
+    },
+    {
+      "title": "LLM Observability: What to Log, Trace, and Measure",
+      "slug": "llm-observability",
+      "relationship": "SUPPORTING",
+      "status": "PENDING"
+    },
+    {
+      "title": "Designing an LLM Gateway for Production",
+      "slug": "llm-gateway-production",
+      "relationship": "SUPPORTING",
+      "status": "PENDING"
+    },
+    {
+      "title": "LLM Retries, Timeouts, and Fallback Strategies",
+      "slug": "llm-retries-timeouts-fallbacks",
+      "relationship": "SUPPORTING",
+      "status": "PENDING"
+    },
+    {
+      "title": "Production AI Security Checklist",
+      "slug": "production-ai-security-checklist",
+      "relationship": "SUPPORTING",
+      "status": "PENDING"
+    }
+  ],
+  "seo": {
+    "title": "Production AI System Design for Reliable LLM Apps",
+    "description": "Design reliable production AI systems with typed contracts, retries, validation, observability, fallbacks, evaluation gates, security, and cost controls.",
+    "primaryKeyword": "production AI system design",
+    "secondaryKeywords": [
+      "production LLM architecture",
+      "LLM application architecture",
+      "LLM reliability",
+      "LLM observability",
+      "AI gateway architecture"
+    ],
+    "canonicalUrl": ""
+  },
+  "og": {
+    "title": "Production AI System Design",
+    "description": "From a model API call to a reliable, observable, testable production AI product.",
+    "image": ""
+  },
+  "featuredImage": {
+    "url": "",
+    "alt": "Production AI system architecture with model gateway, reliability, observability, and evaluation",
+    "prompt": "Technical editorial architecture artwork for a global software engineering publication: application layer, model gateway, LLM service, validation, retries/fallback, observability traces, evaluation gates, security boundary, and latency/cost signals. Clean modern engineering-diagram aesthetic, neutral light background, no vendor logos, no robot imagery."
+  },
+  "content": {
+    "format": "markdown",
+    "body": ""
+  },
+  "repository": {
+    "enabled": true,
+    "provider": "github",
+    "url": "",
+    "repoUrl": "",
+    "projectPath": "production-ai-system-design",
+    "branch": "main",
+    "displayName": "Production AI System Design Reference Implementation",
+    "description": "Tested TypeScript examples and experiments accompanying the ProdAI Stack cornerstone article.",
+    "language": "TypeScript",
+    "tested": true
+  },
+  "repositoryVerification": {
+    "status": "UNVERIFIED",
+    "verifiedAt": null,
+    "commitSha": "",
+    "commands": [
+      "npm run typecheck",
+      "npm run lint",
+      "npm run test",
+      "npm run example:production-ai",
+      "npm run example:diagrams"
+    ]
+  },
+  "technicalReview": {
+    "status": "COMPLETE",
+    "reviewedBy": "Codex",
+    "checks": {
+      "codeExecuted": true,
+      "testsPassed": true,
+      "lintPassed": true,
+      "typeCheckPassed": true,
+      "benchmarksRun": true,
+      "architectureReviewed": true,
+      "sourcesVerified": true
+    },
+    "commandsExecuted": [
+      "npm run typecheck",
+      "npm run lint",
+      "npm run test",
+      "npm run example:production-ai",
+      "npm run example:diagrams"
+    ],
+    "notes": [
+      "Research sources verified by ChatGPT on 2026-08-31.",
+      "Codex must implement/test examples and populate measured experiment results before the final article body states benchmark claims.",
+      "Implemented vendor-neutral TypeScript examples with deterministic fake providers; no secrets or paid model calls are required.",
+      "Experiment metrics are measured local mock/fault-injection results, not external-provider benchmarks.",
+      "Mermaid sources passed the repository declaration and delimiter verifier."
+    ]
+  },
+  "editorialReview": {
+    "status": "PENDING",
+    "checks": {
+      "researchComplete": true,
+      "outlineComplete": true,
+      "sourcesComplete": true,
+      "codeExamplesComplete": true,
+      "experimentsComplete": true,
+      "diagramsComplete": true,
+      "seoComplete": true,
+      "technicalReviewComplete": true,
+      "contentComplete": false,
+      "internalLinksVerified": false
+    },
+    "notes": [
+      "BRIEF ONLY import package. Final Markdown intentionally empty until Codex evidence is available."
+    ]
+  },
+  "editorial": {
+    "status": "DRAFT",
+    "cornerstone": true,
+    "featured": true,
+    "publishDate": null
+  }
+}

@@ -1,0 +1,11 @@
+flowchart LR
+  subgraph Prototype
+    PClient[Client] --> PModel[Model API] --> PResponse[Response]
+  end
+  subgraph Production
+    Client[Client] --> Contract[Typed contract] --> Gateway[Model gateway] --> Provider[Provider]
+    Provider --> Validate[Output and business validation] --> Response[Response]
+    Policy[Security and cost policy] -.-> Gateway
+    Observe[Tracing and evaluation] -.-> Gateway
+    Resilience[Deadline retry fallback] -.-> Gateway
+  end
