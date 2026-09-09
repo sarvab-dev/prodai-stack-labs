@@ -84,9 +84,7 @@
         "Introduce nondeterminism, latency, failures, cost, security, observability, and quality."
       ],
       "codeExampleIds": [],
-      "diagramIds": [
-        "diagram-prototype-vs-production"
-      ],
+      "diagramIds": ["diagram-prototype-vs-production"],
       "experimentIds": []
     },
     {
@@ -99,16 +97,9 @@
         "Model success, refusal, partial result, retryable error, permanent error, and degraded response.",
         "Separate schema validity from business validity."
       ],
-      "codeExampleIds": [
-        "code-contract",
-        "code-schema-validation"
-      ],
-      "diagramIds": [
-        "diagram-request-lifecycle"
-      ],
-      "experimentIds": [
-        "experiment-schema"
-      ]
+      "codeExampleIds": ["code-contract", "code-schema-validation"],
+      "diagramIds": ["diagram-request-lifecycle"],
+      "experimentIds": ["experiment-schema"]
     },
     {
       "id": "section-3",
@@ -120,9 +111,7 @@
         "Show security, evaluation, observability, rate limits, caching, and cost as cross-cutting concerns."
       ],
       "codeExampleIds": [],
-      "diagramIds": [
-        "diagram-request-lifecycle"
-      ],
+      "diagramIds": ["diagram-request-lifecycle"],
       "experimentIds": []
     },
     {
@@ -134,13 +123,8 @@
         "Centralize model identity, timeout, telemetry, token usage, parsing, and error mapping.",
         "Keep provider-specific capabilities accessible through thin adapters."
       ],
-      "codeExampleIds": [
-        "code-model-gateway",
-        "code-provider-adapter"
-      ],
-      "diagramIds": [
-        "diagram-reliability-envelope"
-      ],
+      "codeExampleIds": ["code-model-gateway", "code-provider-adapter"],
+      "diagramIds": ["diagram-reliability-envelope"],
       "experimentIds": []
     },
     {
@@ -153,14 +137,9 @@
         "Validate again at the application boundary.",
         "Explain that schema validity does not imply factual or business correctness."
       ],
-      "codeExampleIds": [
-        "code-schema-validation",
-        "code-business-validation"
-      ],
+      "codeExampleIds": ["code-schema-validation", "code-business-validation"],
       "diagramIds": [],
-      "experimentIds": [
-        "experiment-schema"
-      ]
+      "experimentIds": ["experiment-schema"]
     },
     {
       "id": "section-6",
@@ -172,16 +151,9 @@
         "Respect a total request deadline.",
         "Use bounded exponential backoff with jitter where appropriate."
       ],
-      "codeExampleIds": [
-        "code-timeout-retry"
-      ],
-      "diagramIds": [
-        "diagram-reliability-envelope"
-      ],
-      "experimentIds": [
-        "experiment-timeout",
-        "experiment-retry"
-      ]
+      "codeExampleIds": ["code-timeout-retry"],
+      "diagramIds": ["diagram-reliability-envelope"],
+      "experimentIds": ["experiment-timeout", "experiment-retry"]
     },
     {
       "id": "section-7",
@@ -194,12 +166,8 @@
         "Use idempotency keys.",
         "Introduce human approval for high-impact actions where required."
       ],
-      "codeExampleIds": [
-        "code-idempotent-action"
-      ],
-      "diagramIds": [
-        "diagram-side-effect"
-      ],
+      "codeExampleIds": ["code-idempotent-action"],
+      "diagramIds": ["diagram-side-effect"],
       "experimentIds": []
     },
     {
@@ -212,15 +180,9 @@
         "Record every fallback.",
         "Allow safe degradation or explicit failure when the contract cannot be met."
       ],
-      "codeExampleIds": [
-        "code-fallback"
-      ],
-      "diagramIds": [
-        "diagram-reliability-envelope"
-      ],
-      "experimentIds": [
-        "experiment-fallback"
-      ]
+      "codeExampleIds": ["code-fallback"],
+      "diagramIds": ["diagram-reliability-envelope"],
+      "experimentIds": ["experiment-fallback"]
     },
     {
       "id": "section-9",
@@ -231,12 +193,8 @@
         "Trace app version, prompt/config version, provider/model, latency, token usage, retries, fallback, tools/retrieval, and validation.",
         "Treat prompt/completion content as sensitive opt-in telemetry."
       ],
-      "codeExampleIds": [
-        "code-telemetry"
-      ],
-      "diagramIds": [
-        "diagram-observability"
-      ],
+      "codeExampleIds": ["code-telemetry"],
+      "diagramIds": ["diagram-observability"],
       "experimentIds": []
     },
     {
@@ -250,9 +208,7 @@
       ],
       "codeExampleIds": [],
       "diagramIds": [],
-      "experimentIds": [
-        "experiment-load"
-      ]
+      "experimentIds": ["experiment-load"]
     },
     {
       "id": "section-11",
@@ -264,12 +220,8 @@
         "Break down token, retry, retrieval/tool, and evaluation cost.",
         "Make evaluation a release gate."
       ],
-      "codeExampleIds": [
-        "code-release-gate"
-      ],
-      "diagramIds": [
-        "diagram-ci-eval"
-      ],
+      "codeExampleIds": ["code-release-gate"],
+      "diagramIds": ["diagram-ci-eval"],
       "experimentIds": []
     },
     {
@@ -305,9 +257,7 @@
         "Rollback/degradation documented."
       ],
       "codeExampleIds": [],
-      "diagramIds": [
-        "diagram-final-reference"
-      ],
+      "diagramIds": ["diagram-final-reference"],
       "experimentIds": []
     }
   ],
@@ -385,7 +335,7 @@
       "requirements": [
         "Provider response types must not leak into the public app contract."
       ],
-      "repositoryPath": "examples/production-ai-system-design/src/contracts.ts",
+      "repositoryPath": "src/contracts.ts",
       "code": "",
       "status": "COMPLETE"
     },
@@ -394,10 +344,8 @@
       "title": "Minimal Model Gateway",
       "language": "typescript",
       "description": "Provider-neutral generation boundary for timeout, telemetry, configuration, usage, and parsing.",
-      "requirements": [
-        "Keep interface small and testable."
-      ],
-      "repositoryPath": "examples/production-ai-system-design/src/model-gateway.ts",
+      "requirements": ["Keep interface small and testable."],
+      "repositoryPath": "src/model-gateway.ts",
       "code": "",
       "status": "COMPLETE"
     },
@@ -410,7 +358,7 @@
         "No hard-coded secrets.",
         "Preserve provider error metadata."
       ],
-      "repositoryPath": "examples/production-ai-system-design/src/providers/adapter.ts",
+      "repositoryPath": "src/providers/adapter.ts",
       "code": "",
       "status": "COMPLETE"
     },
@@ -419,10 +367,8 @@
       "title": "Structured Output Validation",
       "language": "typescript",
       "description": "Request schema-constrained output and validate again locally.",
-      "requirements": [
-        "Differentiate parse, schema, and business failures."
-      ],
-      "repositoryPath": "examples/production-ai-system-design/src/validation/schema.ts",
+      "requirements": ["Differentiate parse, schema, and business failures."],
+      "repositoryPath": "src/validation/schema.ts",
       "code": "",
       "status": "COMPLETE"
     },
@@ -431,10 +377,8 @@
       "title": "Business Rule Validation",
       "language": "typescript",
       "description": "Apply deterministic domain checks after schema validation.",
-      "requirements": [
-        "Show schema-valid but business-invalid data."
-      ],
-      "repositoryPath": "examples/production-ai-system-design/src/validation/business.ts",
+      "requirements": ["Show schema-valid but business-invalid data."],
+      "repositoryPath": "src/validation/business.ts",
       "code": "",
       "status": "COMPLETE"
     },
@@ -443,10 +387,8 @@
       "title": "Deadline, Retry Classification, and Backoff",
       "language": "typescript",
       "description": "Bounded retry policy with error classification, jitter, and total deadline.",
-      "requirements": [
-        "Do not retry deterministic validation/auth failures."
-      ],
-      "repositoryPath": "examples/production-ai-system-design/src/reliability/retry.ts",
+      "requirements": ["Do not retry deterministic validation/auth failures."],
+      "repositoryPath": "src/reliability/retry.ts",
       "code": "",
       "status": "COMPLETE"
     },
@@ -455,10 +397,8 @@
       "title": "Idempotent Side-Effect Boundary",
       "language": "typescript",
       "description": "Safe mock action guarded by policy, authorization, and idempotency.",
-      "requirements": [
-        "No real external mutation."
-      ],
-      "repositoryPath": "examples/production-ai-system-design/src/actions/idempotent.ts",
+      "requirements": ["No real external mutation."],
+      "repositoryPath": "src/actions/idempotent.ts",
       "code": "",
       "status": "COMPLETE"
     },
@@ -467,10 +407,8 @@
       "title": "Primary and Fallback Routing",
       "language": "typescript",
       "description": "Explicit failure-triggered fallback with telemetry.",
-      "requirements": [
-        "Record fallback reason and model IDs."
-      ],
-      "repositoryPath": "examples/production-ai-system-design/src/routing/fallback.ts",
+      "requirements": ["Record fallback reason and model IDs."],
+      "repositoryPath": "src/routing/fallback.ts",
       "code": "",
       "status": "COMPLETE"
     },
@@ -479,10 +417,8 @@
       "title": "OpenTelemetry AI Request Trace",
       "language": "typescript",
       "description": "Trace application/model boundaries and usage without capturing sensitive content by default.",
-      "requirements": [
-        "Prompt/completion content capture must be opt-in."
-      ],
-      "repositoryPath": "examples/production-ai-system-design/src/observability/tracing.ts",
+      "requirements": ["Prompt/completion content capture must be opt-in."],
+      "repositoryPath": "src/observability/tracing.ts",
       "code": "",
       "status": "COMPLETE"
     },
@@ -491,10 +427,8 @@
       "title": "Evaluation Release Gate CLI",
       "language": "typescript",
       "description": "Fail CI when quality, reliability, latency, safety, or cost thresholds regress.",
-      "requirements": [
-        "Use process exit code for CI."
-      ],
-      "repositoryPath": "examples/production-ai-system-design/src/eval/release-gate.ts",
+      "requirements": ["Use process exit code for CI."],
+      "repositoryPath": "src/eval/release-gate.ts",
       "code": "",
       "status": "COMPLETE"
     }
@@ -505,24 +439,10 @@
       "title": "Timeout Behavior",
       "hypothesis": "Application deadlines produce predictable failure/degradation under slow provider responses.",
       "description": "Inject 500 ms, 2 s, 5 s, and over-deadline latency.",
-      "variables": [
-        "provider latency",
-        "deadline"
-      ],
-      "metrics": [
-        "completion rate",
-        "timeout rate",
-        "end-to-end latency"
-      ],
-      "testCases": [
-        "500 ms",
-        "2 s",
-        "5 s",
-        "over deadline"
-      ],
-      "commands": [
-        "npm run example:production-ai"
-      ],
+      "variables": ["provider latency", "deadline"],
+      "metrics": ["completion rate", "timeout rate", "end-to-end latency"],
+      "testCases": ["500 ms", "2 s", "5 s", "over deadline"],
+      "commands": ["npm run example:production-ai"],
       "results": {
         "status": "PASSED",
         "summary": "Three in-budget requests completed and the over-deadline request was cancelled.",
@@ -543,11 +463,7 @@
       "title": "Retry Amplification",
       "hypothesis": "Bounded exponential backoff with jitter reduces synchronized retries versus fixed retries.",
       "description": "Compare no retry, fixed retry, and exponential backoff under 429/5xx faults.",
-      "variables": [
-        "retry strategy",
-        "failure type",
-        "concurrency"
-      ],
+      "variables": ["retry strategy", "failure type", "concurrency"],
       "metrics": [
         "provider calls",
         "successful tasks",
@@ -559,9 +475,7 @@
         "temporary 500",
         "persistent non-retryable failure"
       ],
-      "commands": [
-        "npm run example:production-ai"
-      ],
+      "commands": ["npm run example:production-ai"],
       "results": {
         "status": "PASSED",
         "summary": "Bounded retries recovered temporary 429/500 failures and did not retry permanent failures.",
@@ -591,26 +505,15 @@
       "title": "Schema Validity vs Business Validity",
       "hypothesis": "Structured outputs reduce malformed responses, while domain validation still catches semantic failures.",
       "description": "Classify outputs as parseable, schema-valid, and business-valid.",
-      "variables": [
-        "output mode",
-        "prompt",
-        "model config"
-      ],
+      "variables": ["output mode", "prompt", "model config"],
       "metrics": [
         "parse success",
         "schema validity",
         "business validity",
         "refusal rate"
       ],
-      "testCases": [
-        "normal",
-        "ambiguous",
-        "domain-invalid",
-        "missing-data"
-      ],
-      "commands": [
-        "npm run example:production-ai"
-      ],
+      "testCases": ["normal", "ambiguous", "domain-invalid", "missing-data"],
+      "commands": ["npm run example:production-ai"],
       "results": {
         "status": "PASSED",
         "summary": "Parsing, structural validity, and domain validity were measured independently.",
@@ -631,10 +534,7 @@
       "title": "Primary-Only vs Primary-With-Fallback",
       "hypothesis": "Fallback may improve completion during outages but can trade off quality, latency, or cost.",
       "description": "Run identical tasks under healthy and failed-primary conditions.",
-      "variables": [
-        "routing policy",
-        "failure condition"
-      ],
+      "variables": ["routing policy", "failure condition"],
       "metrics": [
         "completion rate",
         "quality",
@@ -642,15 +542,8 @@
         "fallback rate",
         "cost per successful task"
       ],
-      "testCases": [
-        "healthy primary",
-        "timeout",
-        "429",
-        "5xx"
-      ],
-      "commands": [
-        "npm run example:production-ai"
-      ],
+      "testCases": ["healthy primary", "timeout", "429", "5xx"],
+      "commands": ["npm run example:production-ai"],
       "results": {
         "status": "PASSED",
         "summary": "Fallback improved completion for retryable failures without masking authentication failures.",
@@ -672,11 +565,7 @@
       "title": "Concurrency and Tail-Latency Load Test",
       "hypothesis": "Concurrency control and rate-limit-aware behavior improve tail latency and reduce cascading failures.",
       "description": "Use a mock provider by default; live calls only when explicitly authorized.",
-      "variables": [
-        "concurrency",
-        "capacity",
-        "limiter"
-      ],
+      "variables": ["concurrency", "capacity", "limiter"],
       "metrics": [
         "throughput",
         "p50",
@@ -685,15 +574,8 @@
         "error rate",
         "rate-limit rate"
       ],
-      "testCases": [
-        "baseline",
-        "moderate",
-        "capacity boundary",
-        "burst"
-      ],
-      "commands": [
-        "npm run example:production-ai"
-      ],
+      "testCases": ["baseline", "moderate", "capacity boundary", "burst"],
+      "commands": ["npm run example:production-ai"],
       "results": {
         "status": "PASSED",
         "summary": "A capacity-limited fake provider exposed throughput, tail latency, errors, and rate limiting under bursts.",
@@ -732,11 +614,7 @@
       "url": "https://docs.aws.amazon.com/wellarchitected/latest/generative-ai-lens/genrel03-bp01.html",
       "publisher": "Amazon Web Services",
       "sourceType": "OFFICIAL",
-      "supports": [
-        "abstraction layers",
-        "retries",
-        "fallback"
-      ],
+      "supports": ["abstraction layers", "retries", "fallback"],
       "notes": "Supports reliability-envelope guidance.",
       "verified": true
     },
@@ -759,11 +637,7 @@
       "url": "https://docs.aws.amazon.com/wellarchitected/latest/generative-ai-lens/genperf02.html",
       "publisher": "Amazon Web Services",
       "sourceType": "OFFICIAL",
-      "supports": [
-        "load testing",
-        "performance thresholds",
-        "nondeterminism"
-      ],
+      "supports": ["load testing", "performance thresholds", "nondeterminism"],
       "notes": "Supports load-test section.",
       "verified": true
     },
@@ -787,12 +661,7 @@
       "url": "https://opentelemetry.io/blog/2026/genai-observability/",
       "publisher": "OpenTelemetry",
       "sourceType": "ENGINEERING",
-      "supports": [
-        "GenAI tracing",
-        "token usage",
-        "tool calls",
-        "latency"
-      ],
+      "supports": ["GenAI tracing", "token usage", "tool calls", "latency"],
       "notes": "Current 2026 observability source.",
       "verified": true
     },
@@ -801,12 +670,7 @@
       "url": "https://opentelemetry.io/docs/specs/semconv/",
       "publisher": "OpenTelemetry",
       "sourceType": "OFFICIAL",
-      "supports": [
-        "traces",
-        "metrics",
-        "logs",
-        "semantic attributes"
-      ],
+      "supports": ["traces", "metrics", "logs", "semantic attributes"],
       "notes": "Telemetry standards reference.",
       "verified": true
     },
@@ -829,10 +693,7 @@
       "url": "https://developers.openai.com/api/reference/cli/resources/beta/subresources/responses",
       "publisher": "OpenAI",
       "sourceType": "OFFICIAL",
-      "supports": [
-        "JSON Schema",
-        "structured outputs"
-      ],
+      "supports": ["JSON Schema", "structured outputs"],
       "notes": "Concrete implementation reference; architecture remains vendor-neutral.",
       "verified": true
     },
@@ -841,11 +702,7 @@
       "url": "https://www.anthropic.com/engineering/building-effective-agents",
       "publisher": "Anthropic",
       "sourceType": "ENGINEERING",
-      "supports": [
-        "ground truth",
-        "stopping conditions",
-        "agent reliability"
-      ],
+      "supports": ["ground truth", "stopping conditions", "agent reliability"],
       "notes": "Use in tools/agents extension section.",
       "verified": true
     },
@@ -854,10 +711,7 @@
       "url": "https://github.blog/news-insights/octoverse/octoverse-a-new-developer-joins-github-every-second-as-ai-leads-typescript-to-1/",
       "publisher": "GitHub",
       "sourceType": "RESEARCH",
-      "supports": [
-        "developer demand",
-        "LLM SDK adoption"
-      ],
+      "supports": ["developer demand", "LLM SDK adoption"],
       "notes": "1.1M+ public repos importing LLM SDKs; +178% YoY.",
       "verified": true
     },
@@ -866,10 +720,7 @@
       "url": "https://survey.stackoverflow.co/2025/ai",
       "publisher": "Stack Overflow",
       "sourceType": "RESEARCH",
-      "supports": [
-        "developer trust",
-        "AI adoption"
-      ],
+      "supports": ["developer trust", "AI adoption"],
       "notes": "Distrust of AI-tool accuracy exceeds trust.",
       "verified": true
     }
@@ -942,19 +793,19 @@
   "repository": {
     "enabled": true,
     "provider": "github",
-    "url": "",
-    "repoUrl": "",
+    "url": "https://github.com/sarvab-dev/prodai-stack-labs/tree/main/production-ai-system-design",
+    "repoUrl": "https://github.com/sarvab-dev/prodai-stack-labs",
     "projectPath": "production-ai-system-design",
     "branch": "main",
     "displayName": "Production AI System Design Reference Implementation",
-    "description": "Tested TypeScript examples and experiments accompanying the ProdAI Stack cornerstone article.",
+    "description": "Tested TypeScript reference implementation, experiments, diagrams, and reliability examples accompanying the ProdAI Stack cornerstone article.",
     "language": "TypeScript",
     "tested": true
   },
   "repositoryVerification": {
-    "status": "UNVERIFIED",
-    "verifiedAt": null,
-    "commitSha": "",
+    "status": "VERIFIED",
+    "verifiedAt": "2026-09-01",
+    "commitSha": "ca6908c48ba27407bcc3265cd3919025f0aa7775",
     "commands": [
       "npm run typecheck",
       "npm run lint",

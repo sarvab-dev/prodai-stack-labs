@@ -12,7 +12,7 @@ async function main() {
   const input = process.argv[2]; const output = process.argv[3];
   if (!input || !output) throw new Error("Usage: update-brief <input.json> <output.json>");
   const brief = JSON.parse(await readFile(input, "utf8")) as JsonObject;
-  const root = join(process.cwd(), "examples", "production-ai-system-design");
+  const root = process.cwd();
   for (const diagram of brief.diagrams as JsonObject[]) {
     const file = diagramFiles[String(diagram.id)];
     if (!file) throw new Error(`Missing diagram mapping: ${String(diagram.id)}`);
