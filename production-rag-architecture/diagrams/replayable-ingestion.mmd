@@ -1,0 +1,9 @@
+stateDiagram-v2
+  [*] --> Discovered
+  Discovered --> Hashed
+  Hashed --> Unchanged: same hash
+  Hashed --> Chunked: new version
+  Chunked --> Indexed
+  Indexed --> Verified
+  Discovered --> Tombstoned: delete
+  Tombstoned --> RebuildExcluded

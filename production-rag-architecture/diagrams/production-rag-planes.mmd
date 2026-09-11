@@ -1,0 +1,8 @@
+flowchart LR
+  subgraph K[Knowledge plane]
+    S[Sources] --> P[Parse and normalize] --> C[Versioned chunks] --> I[Versioned index]
+  end
+  subgraph O[Online answer plane]
+    Q[Query] --> A[Authorize] --> R[Retrieve and fuse] --> X[Context] --> G[Generate] --> V[Validate citations]
+  end
+  I --> R

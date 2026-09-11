@@ -1,0 +1,2 @@
+import type { Citation, RetrievedEvidence } from "../contracts";
+export const buildCitations = (evidence: RetrievedEvidence[]): Citation[] => evidence.map(({ evidenceId, chunk }) => ({ evidenceId, sourceId: chunk.metadata.sourceId, sourceVersion: chunk.metadata.sourceVersion, chunkId: chunk.id, uri: chunk.metadata.sourceUri, title: chunk.metadata.title, section: chunk.metadata.section, page: chunk.metadata.page }));

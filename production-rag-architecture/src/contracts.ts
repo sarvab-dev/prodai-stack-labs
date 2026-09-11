@@ -1,0 +1,15 @@
+export type Visibility = "public" | "tenant" | "restricted";
+export type AuthorizationAttributes = { tenantId: string; allowedGroups: string[]; visibility: Visibility };
+export type SourceDocument = { id: string; title: string; uri: string; content: string; version: string; authorization: AuthorizationAttributes; section?: string; page?: number };
+export type ChunkMetadata = { sourceId: string; sourceVersion: string; sourceUri: string; title: string; section?: string; page?: number; start: number; end: number; authorization: AuthorizationAttributes; chunkerVersion: string; indexVersion: string };
+export type Chunk = { id: string; version: string; contentHash: string; text: string; metadata: ChunkMetadata };
+export type DocumentVersion = { sourceId: string; version: string; contentHash: string; chunkIds: string[]; deleted: boolean };
+export type RetrievalQuery = { text: string; tenantId: string; groups: string[]; topK: number };
+export type RetrievalMethod = "keyword" | "vector" | "hybrid" | "reranked";
+export type RetrievalCandidate = { chunk: Chunk; score: number; method: RetrievalMethod; contributions?: Record<string, number> };
+export type RetrievedEvidence = RetrievalCandidate & { evidenceId: string };
+export type Citation = { evidenceId: string; sourceId: string; sourceVersion: string; chunkId: string; uri: string; title: string; section?: string; page?: number };
+export type GroundedAnswer = { text: string; citations: Citation[]; insufficientEvidence: boolean };
+export type RagRequest = { query: RetrievalQuery; rerank?: boolean; contextBudget: number; indexVersion: string };
+export type StageEvent = { stage: string; count?: number; durationMs: number; metadata?: Record<string, string | number | boolean> };
+export type RagResult = { answer: GroundedAnswer; evidence: RetrievedEvidence[]; telemetry: StageEvent[]; citationsValid: boolean };

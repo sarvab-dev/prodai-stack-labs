@@ -1,0 +1,2 @@
+import type { Citation, RetrievedEvidence } from "../contracts";
+export function traceCitation(citation: Citation, evidence: RetrievedEvidence[]) { const match = evidence.find((item) => item.evidenceId === citation.evidenceId && item.chunk.id === citation.chunkId); return match ? { answerCitation: citation, chunk: match.chunk.id, source: match.chunk.metadata.sourceId, sourceVersion: match.chunk.metadata.sourceVersion } : undefined; }

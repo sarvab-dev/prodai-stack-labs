@@ -24,3 +24,9 @@ Production-oriented TypeScript examples covering:
 [Open the reference implementation](./production-ai-system-design)
 
 The implementation uses deterministic mocks and fault injection; its results are not external-provider benchmarks.
+
+### Production RAG Architecture
+
+Offline TypeScript examples for versioned ingestion, authorization-aware hybrid retrieval, RRF, reranking, grounded citations, evaluation, and release gates.
+
+[Open the reference implementation](./production-rag-architecture)

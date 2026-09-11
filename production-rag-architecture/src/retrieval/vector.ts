@@ -1,0 +1,6 @@
+import type { Chunk, RetrievalCandidate } from "../contracts";
+const concepts: Record<string, string> = { automobile: "car", vehicle: "car", permission: "authorization", access: "authorization", remove: "delete", deletion: "delete", fresh: "update", newest: "update", semantic: "embedding", vectors: "embedding", lexical: "keyword" };
+const tokens = (text: string) => (text.toLowerCase().match(/[a-z0-9_-]+/g) ?? []).map((term) => concepts[term] ?? term);
+export function vectorize(text: string, dimensions = 64) { const out = Array(dimensions).fill(0) as number[]; for (const token of tokens(text)) { let h = 2166136261; for (const char of token) h = Math.imul(h ^ char.charCodeAt(0), 16777619); out[Math.abs(h) % dimensions] += 1; } return out; }
+export function cosine(a: number[], b: number[]) { const dot = a.reduce((s, v, i) => s + v * b[i], 0); const na = Math.sqrt(a.reduce((s, v) => s + v * v, 0)); const nb = Math.sqrt(b.reduce((s, v) => s + v * v, 0)); return na && nb ? dot / (na * nb) : 0; }
+export function vectorRetrieve(query: string, chunks: Chunk[], topK = 10): RetrievalCandidate[] { const q = vectorize(query); return chunks.map((chunk) => ({ chunk, score: cosine(q, vectorize(chunk.text)), method: "vector" as const })).filter((x) => x.score > 0).sort((a, b) => b.score - a.score || a.chunk.id.localeCompare(b.chunk.id)).slice(0, topK); }

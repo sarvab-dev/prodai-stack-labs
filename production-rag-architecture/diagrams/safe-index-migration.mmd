@@ -1,0 +1,5 @@
+flowchart LR
+  L[Live index v1] --> Serve[Serve traffic]
+  Sources[Replay sources] --> Shadow[Shadow index v2] --> Eval[Run regression gates]
+  Eval -->|pass| Cutover[Atomic cutover] --> Serve2[Serve v2]
+  Eval -->|fail| L

@@ -1,0 +1,2 @@
+import { corpus, config } from "../fixtures/corpus"; import { InMemoryIngestionIndex } from "./ingestion/idempotency"; import { runRag } from "./pipeline/rag-pipeline";
+const index = new InMemoryIngestionIndex(); corpus.forEach((source) => index.upsert(source, config)); console.log(JSON.stringify(runRag({ query: { text: "How should removed documents behave after index rebuild?", tenantId: "acme", groups: [], topK: 3 }, rerank: true, contextBudget: 80, indexVersion: config.indexVersion }, index.all()), null, 2));

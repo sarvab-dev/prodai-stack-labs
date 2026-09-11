@@ -1,0 +1,9 @@
+flowchart TB
+  G[Golden queries] --> R[Recall MRR nDCG]
+  G --> C[Citation precision and coverage]
+  G --> A[Authorization leakage]
+  G --> F[Freshness and delete checks]
+  R --> Gate[Release gate]
+  C --> Gate
+  A --> Gate
+  F --> Gate

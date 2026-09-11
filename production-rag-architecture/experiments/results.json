@@ -1,0 +1,200 @@
+{
+  "generatedBy": "npm run example:experiments",
+  "results": [
+    {
+      "id": "experiment-retrieval-baseline",
+      "status": "PASSED",
+      "environment": "deterministic local offline harness",
+      "dataset": "Six small multi-tenant documents covering identifiers, paraphrases, versions, deletes, citations, and ambiguity",
+      "configuration": {
+        "topK": 3
+      },
+      "metrics": {
+        "keyword": {
+          "recallAt3": 1,
+          "mrr": 1,
+          "ndcgAt3": 1
+        },
+        "vector": {
+          "recallAt3": 1,
+          "mrr": 1,
+          "ndcgAt3": 1
+        },
+        "hybrid": {
+          "recallAt3": 1,
+          "mrr": 1,
+          "ndcgAt3": 1
+        }
+      },
+      "observations": [
+        "Strategies were evaluated on the same query set."
+      ],
+      "limitations": [
+        "Hash vectors are educational representations, not production embeddings."
+      ]
+    },
+    {
+      "id": "experiment-chunking",
+      "status": "PASSED",
+      "environment": "deterministic local offline harness",
+      "dataset": "Six small multi-tenant documents covering identifiers, paraphrases, versions, deletes, citations, and ambiguity",
+      "configuration": {
+        "variants": [
+          {
+            "size": 12,
+            "overlap": 2
+          },
+          {
+            "size": 18,
+            "overlap": 4
+          },
+          {
+            "size": 28,
+            "overlap": 4
+          }
+        ]
+      },
+      "metrics": {
+        "recallAt3": 1,
+        "duplicateContextRate": 0,
+        "averageContextSize": 38
+      },
+      "observations": [
+        "No single chunk configuration is claimed as universal."
+      ],
+      "limitations": [
+        "Small local corpus."
+      ]
+    },
+    {
+      "id": "experiment-reranking",
+      "status": "PASSED",
+      "environment": "deterministic local offline harness",
+      "dataset": "Six small multi-tenant documents covering identifiers, paraphrases, versions, deletes, citations, and ambiguity",
+      "configuration": {
+        "candidateCount": 3
+      },
+      "metrics": {
+        "fusionMrr": 1,
+        "rerankedMrr": 1,
+        "rerankLatencyMs": 0.15970000000004347
+      },
+      "observations": [
+        "Incremental quality may be unchanged."
+      ],
+      "limitations": [
+        "Local deterministic reranker, not a cross-encoder."
+      ]
+    },
+    {
+      "id": "experiment-context-budget",
+      "status": "PASSED",
+      "environment": "deterministic local offline harness",
+      "dataset": "Six small multi-tenant documents covering identifiers, paraphrases, versions, deletes, citations, and ambiguity",
+      "configuration": {
+        "budgets": [
+          20,
+          40,
+          80
+        ]
+      },
+      "metrics": {
+        "variants": [
+          {
+            "budget": 20,
+            "contextUnits": 20,
+            "evidenceCount": 2
+          },
+          {
+            "budget": 40,
+            "contextUnits": 38,
+            "evidenceCount": 3
+          },
+          {
+            "budget": 80,
+            "contextUnits": 38,
+            "evidenceCount": 3
+          }
+        ],
+        "duplicateContextRate": 0
+      },
+      "observations": [
+        "Units are whitespace-separated estimates, not provider billing tokens."
+      ],
+      "limitations": [
+        "Local timing is not a provider benchmark."
+      ]
+    },
+    {
+      "id": "experiment-authorization",
+      "status": "PASSED",
+      "environment": "deterministic local offline harness",
+      "dataset": "Six small multi-tenant documents covering identifiers, paraphrases, versions, deletes, citations, and ambiguity",
+      "configuration": {
+        "tenant": "acme",
+        "groups": [
+          "engineers"
+        ]
+      },
+      "metrics": {
+        "unauthorizedRetrievalCount": 0
+      },
+      "observations": [
+        "Authorization filtered candidates before ranking and context."
+      ],
+      "limitations": []
+    },
+    {
+      "id": "experiment-citation",
+      "status": "PASSED",
+      "environment": "deterministic local offline harness",
+      "dataset": "Six small multi-tenant documents covering identifiers, paraphrases, versions, deletes, citations, and ambiguity",
+      "configuration": {
+        "cases": [
+          "correct",
+          "non-retrieved",
+          "wrong-version",
+          "uncited-claim"
+        ]
+      },
+      "metrics": {
+        "citationPrecision": 1,
+        "citationCoverage": 1
+      },
+      "observations": [
+        "Metrics are deterministic evidence-ID checks."
+      ],
+      "limitations": [
+        "No model-based grading."
+      ]
+    },
+    {
+      "id": "experiment-freshness-delete",
+      "status": "PASSED",
+      "environment": "deterministic local offline harness",
+      "dataset": "Six small multi-tenant documents covering identifiers, paraphrases, versions, deletes, citations, and ambiguity",
+      "configuration": {
+        "operations": [
+          "update",
+          "delete",
+          "replay"
+        ]
+      },
+      "metrics": {
+        "staleResultCount": 0,
+        "deletedResultCount": 0,
+        "ingestionLagMs": 0.4094000000000051
+      },
+      "observations": [
+        "Timing is local harness timing."
+      ],
+      "limitations": [
+        "Not a production freshness benchmark."
+      ]
+    }
+  ],
+  "releaseGate": {
+    "passed": true,
+    "failures": []
+  }
+}

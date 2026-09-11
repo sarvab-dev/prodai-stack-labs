@@ -1,0 +1,2 @@
+import type { RetrievalCandidate } from "../contracts";
+export function rerank(query: string, candidates: RetrievalCandidate[]) { const phrases = query.toLowerCase().split(/\s+/); return candidates.map((item) => ({ ...item, method: "reranked" as const, score: item.score + phrases.filter((term) => item.chunk.text.toLowerCase().includes(term)).length * .01 })).sort((a, b) => b.score - a.score || a.chunk.id.localeCompare(b.chunk.id)); }

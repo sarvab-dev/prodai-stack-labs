@@ -1,0 +1,10 @@
+import type { SourceDocument } from "../src/contracts";
+export const corpus: SourceDocument[] = [
+  { id: "atlas-api", title: "Atlas API", uri: "local://atlas", version: "2", section: "Authentication", content: "ATLAS-42 uses scoped authorization tokens. Rotate credentials before expiry and deny cross tenant access.", authorization: { tenantId: "acme", allowedGroups: ["engineers"], visibility: "restricted" } },
+  { id: "hybrid", title: "Hybrid Search", uri: "local://hybrid", version: "1", section: "Fusion", content: "Combine keyword lexical ranking and semantic embedding retrieval with reciprocal rank fusion. Rerank only the small fused candidate set.", authorization: { tenantId: "public", allowedGroups: [], visibility: "public" } },
+  { id: "freshness", title: "Index Freshness", uri: "local://freshness", version: "2", section: "Deletes", content: "Updates create a new source version. Durable delete tombstones prevent removed documents from returning during replay or shadow index rebuild.", authorization: { tenantId: "acme", allowedGroups: [], visibility: "tenant" } },
+  { id: "citations", title: "Citation Integrity", uri: "local://citations", version: "1", section: "Validation", content: "Grounded answers cite retrieved evidence by source version and chunk identity. Fabricated references fail validation.", authorization: { tenantId: "public", allowedGroups: [], visibility: "public" } },
+  { id: "other-tenant", title: "Secret Atlas Migration", uri: "local://secret", version: "1", content: "ATLAS-42 migration secret belongs only to the beta tenant.", authorization: { tenantId: "beta", allowedGroups: ["admins"], visibility: "restricted" } },
+  { id: "ambiguous", title: "Vehicle Guide", uri: "local://vehicle", version: "1", content: "An automobile is a road vehicle also commonly called a car.", authorization: { tenantId: "public", allowedGroups: [], visibility: "public" } },
+];
+export const config = { size: 18, overlap: 4, chunkerVersion: "words-v1", indexVersion: "index-v1" };

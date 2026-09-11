@@ -1,0 +1,6 @@
+flowchart LR
+  Q[Authorized query] --> K[Keyword BM25]
+  Q --> V[Vector cosine]
+  K --> F[Reciprocal Rank Fusion]
+  V --> F
+  F --> R[Optional reranker] --> C[Bounded context]
