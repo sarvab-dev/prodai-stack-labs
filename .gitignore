@@ -13,6 +13,9 @@ build/
 coverage/
 test-results/
 
+# Personal verification artifacts
+production-rag-architecture/artifacts/*.json
+
 *.log
 *.pid
 
